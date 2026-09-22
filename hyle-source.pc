@@ -1,0 +1,10 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libhyle-source
+Description: Dataset persistence engine and storage drivers for Hyle
+Version: 0.2.0
+Libs: -L${libdir} -lhyle-source -lhyle -lqmap -lstoma -ljson-c
+Cflags: -I${includedir}
