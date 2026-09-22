@@ -46,7 +46,7 @@ unsigned hyle_source_query_dataset(const char *dataset_id, const char *query_str
 
 ## Dependencies
 
-- `external/hyle` — Core query and schema definitions
+- `external/libhyle` — Core query and schema definitions
 - `external/libqmap` — Key-value registry
 - `external/stoma` — FTS indexing
 - `json-c` — JSON serialization
