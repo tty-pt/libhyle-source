@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <ttypt/qmap.h>
-#include <hyle/source.h>
+#include <hyle/registry.h>
 
 int hyle_source_get_display_field(const char *dataset_id, char *out, size_t sz)
 {
@@ -416,7 +416,7 @@ int hyle_source_ordered_sync_form_custom(
 	if (get_field(amount_param ? amount_param : "amount", amt_buf, sizeof(amt_buf), user) > 0)
 		amount = atoi(amt_buf);
 
-	hyle_source_ordered_clear(source_id, partition_id);
+	hyle_ordered_clear(source_id, partition_id);
 
 	for (int i = 0; i < amount; i++) {
 		char rem_name[64];
@@ -469,10 +469,10 @@ int hyle_source_ordered_sync_form_custom(
 		}
 
 		if (valid) {
-			hyle_source_ordered_append(source_id, partition_id, names, vals, n_fields);
+			hyle_ordered_append(source_id, partition_id, names, vals, n_fields);
 		}
 	}
-	hyle_source_ordered_save(source_id, partition_id);
+	hyle_ordered_save(source_id, partition_id);
 	return 0;
 }
 
@@ -483,7 +483,7 @@ const char *hyle_source_ordered_get_field(
 	if (!source_id || !partition_val || index < 0 || !field)
 		return NULL;
 	const char *key =
-	        hyle_source_ordered_key_at(source_id, partition_val, index);
+	        hyle_ordered_key_at(source_id, partition_val, index);
 	if (!key)
 		return NULL;
 	unsigned fhd = hyle_source_get_fields_hd(source_id);
@@ -499,13 +499,13 @@ int hyle_source_ordered_set_field(
 	if (!source_id || !partition_val || index < 0 || !field)
 		return -1;
 	const char *key =
-	        hyle_source_ordered_key_at(source_id, partition_val, index);
+	        hyle_ordered_key_at(source_id, partition_val, index);
 	if (!key)
 		return -1;
 	const char *names[1] = { field };
 	const char *vals[1] = { value ? value : "" };
-	hyle_source_put(source_id, key, names, vals, 1);
-	hyle_source_ordered_save(source_id, partition_val);
+	hyle_registry_put(source_id, key, names, vals, 1);
+	hyle_ordered_save(source_id, partition_val);
 	return 0;
 }
 
@@ -514,11 +514,11 @@ int hyle_source_ordered_remove_and_save(
 {
 	if (!source_id || !partition_val || index < 0)
 		return -1;
-	int count = hyle_source_ordered_count(source_id, partition_val);
+	int count = hyle_ordered_count(source_id, partition_val);
 	if (index >= count)
 		return -1;
-	hyle_source_ordered_remove_at(source_id, partition_val, index);
-	hyle_source_ordered_save(source_id, partition_val);
+	hyle_ordered_remove_at(source_id, partition_val, index);
+	hyle_ordered_save(source_id, partition_val);
 	return 0;
 }
 
@@ -528,10 +528,10 @@ int hyle_source_ordered_append_and_save(
 {
 	if (!source_id || !partition_val || !names || !vals || count == 0)
 		return -1;
-	int rc = hyle_source_ordered_append(
+	int rc = hyle_ordered_append(
 	        source_id, partition_val, names, vals, count);
 	if (rc == 0)
-		hyle_source_ordered_save(source_id, partition_val);
+		hyle_ordered_save(source_id, partition_val);
 	return rc;
 }
 
@@ -541,11 +541,11 @@ int hyle_source_ordered_for_each(
 {
 	if (!source_id || !partition_val || !fn)
 		return 0;
-	int total = hyle_source_ordered_count(source_id, partition_val);
+	int total = hyle_ordered_count(source_id, partition_val);
 	unsigned fhd = hyle_source_get_fields_hd(source_id);
 	for (int i = 0; i < total; i++) {
 		const char *key =
-		        hyle_source_ordered_key_at(source_id, partition_val, i);
+		        hyle_ordered_key_at(source_id, partition_val, i);
 		if (key)
 			fn(i, key, fhd, user);
 	}
@@ -558,7 +558,7 @@ int hyle_source_ordered_find(
 {
 	if (!source_id || !partition_val || !field || !val)
 		return -1;
-	int total = hyle_source_ordered_count(source_id, partition_val);
+	int total = hyle_ordered_count(source_id, partition_val);
 	for (int i = 0; i < total; i++) {
 		const char *fval =
 		        hyle_source_ordered_get_field(source_id, partition_val, i, field);
@@ -585,11 +585,11 @@ int hyle_source_ordered_replace_row(
 	if (!source_id || !partition_val || index < 0 || !names || !vals || count == 0)
 		return -1;
 	const char *key =
-	        hyle_source_ordered_key_at(source_id, partition_val, index);
+	        hyle_ordered_key_at(source_id, partition_val, index);
 	if (!key)
 		return -1;
-	hyle_source_put(source_id, key, names, vals, count);
-	hyle_source_ordered_save(source_id, partition_val);
+	hyle_registry_put(source_id, key, names, vals, count);
+	hyle_ordered_save(source_id, partition_val);
 	return 0;
 }
 

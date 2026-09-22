@@ -14,7 +14,7 @@
 #include <ttypt/qmap.h>
 #include <stoma/stoma.h>
 #include <hyle/hyle.h>
-#include <hyle/source.h>
+#include <hyle/registry.h>
 
 static void str_trim(char *s)
 {
@@ -38,7 +38,7 @@ hyle_source_def_t *hyle_source_find(const char *dataset_id)
 {
 	if (!dataset_id || !dataset_id[0])
 		return NULL;
-	return (hyle_source_def_t *)hyle_source_get_user(dataset_id);
+	return (hyle_source_def_t *)hyle_registry_get_user(dataset_id);
 }
 
 int hyle_source_is_creatable(const char *dataset_id)
@@ -370,14 +370,14 @@ int hyle_source_for_each(hyle_source_each_cb_t cb, void *user)
 
 	if (!cb)
 		return -1;
-	count = hyle_source_count();
+	count = hyle_registry_count();
 	for (i = 0; i < count; i++) {
-		const char *sid = hyle_source_id_at(i);
+		const char *sid = hyle_registry_id_at(i);
 		hyle_source_def_t *def;
 
 		if (!sid)
 			continue;
-		def = (hyle_source_def_t *)hyle_source_get_user(sid);
+		def = (hyle_source_def_t *)hyle_registry_get_user(sid);
 		if (!def)
 			continue;
 		if (cb(def, user) != 0)
@@ -396,7 +396,7 @@ int hyle_source_delete_item(
 		return -1;
 	if (def->store.ops && def->store.ops->del)
 		def->store.ops->del((hyle_source_store_t *)&def->store, def, item_id);
-	hyle_source_del(def->id, item_id);
+	hyle_registry_del(def->id, item_id);
 	return 0;
 }
 
@@ -721,7 +721,7 @@ int hyle_source_register_def(const hyle_source_def_t *def)
 		}
 	}
 
-	fields_hd = hyle_source_register(
+	fields_hd = hyle_registry_register(
 	        copy->id, hf, n, def->record_id, def->flags | QM_SORTED, copy);
 
 	if (!fields_hd) {
@@ -730,7 +730,7 @@ int hyle_source_register_def(const hyle_source_def_t *def)
 		return -1;
 	}
 
-	copy->source_hd = hyle_source_get_row_hd(def->id);
+	copy->source_hd = hyle_registry_get_row_hd(def->id);
 	copy->fields_hd = fields_hd;
 
 	if (def->record_id > 0) {
@@ -766,7 +766,7 @@ unsigned hyle_source_query_dataset(
 	size_t total;
 	char tbuf[16];
 
-	if (!dataset_id || !hyle_source_get_user(dataset_id))
+	if (!dataset_id || !hyle_registry_get_user(dataset_id))
 		return 0;
 
 	memset(&query, 0, sizeof(query));
@@ -807,7 +807,7 @@ unsigned hyle_source_query_dataset(
 	memset(&output, 0, sizeof(output));
 	total = 0;
 
-	if (hyle_source_query(dataset_id, &query, &output, &total) != 0) {
+	if (hyle_registry_query(dataset_id, &query, &output, &total) != 0) {
 		hyle_query_clear(&query);
 		free(qs_copy);
 		return 0;
@@ -823,7 +823,12 @@ unsigned hyle_source_query_dataset(
 
 unsigned hyle_source_get_data_hd(const char *dataset_id)
 {
-	return hyle_source_get_row_hd(dataset_id);
+	return hyle_registry_get_row_hd(dataset_id);
+}
+
+unsigned hyle_source_get_fields_hd(const char *dataset_id)
+{
+	return hyle_registry_get_fields_hd(dataset_id);
 }
 
 static unsigned source_build_schema_hd(const hyle_source_def_t *def)

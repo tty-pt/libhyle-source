@@ -7,7 +7,7 @@
 #include <json-c/json.h>
 #include <hyle/field.h>
 #include <hyle/schema.h>
-#include <hyle/picker.h>
+#include <hyle-source/picker.h>
 #include "store.h"
 
 typedef enum {
@@ -56,9 +56,8 @@ typedef struct {
 	const char *content_placeholder;
 } hyle_source_list_view_t;
 
-/* Framework-neutral unified descriptor aliases */
+/* Framework-neutral unified descriptor alias */
 typedef hyle_schema_desc_t hyle_source_desc_t;
-typedef hyle_schema_desc_t source_desc_t;
 
 typedef struct hyle_source_def_s {
 	const char *id;

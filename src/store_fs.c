@@ -11,7 +11,7 @@
 #include <errno.h>
 #include <ttypt/qmap.h>
 #include <hyle/hyle.h>
-#include <hyle/source.h>
+#include <hyle/registry.h>
 
 #include <pwd.h>
 
@@ -106,7 +106,7 @@ static int fs_load(hyle_source_store_t *store, const hyle_source_def_t *def,
 			return -1;
 		}
 	}
-	int rc = hyle_source_put(def->id, id, names, values, k);
+	int rc = hyle_registry_put(def->id, id, names, values, k);
 	for (size_t i = 0; i < nb; i++)
 		free(bufs[i]);
 	if (row_out)

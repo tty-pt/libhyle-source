@@ -5,7 +5,7 @@
 #include <string.h>
 #include <limits.h>
 #include <ttypt/qmap.h>
-#include <hyle/source.h>
+#include <hyle/registry.h>
 
 static void dsv_path(
         char *buf, size_t sz, const char *doc_root, const char *source_id,
@@ -45,7 +45,7 @@ int hyle_source_dsv_load(
 	if (!raw)
 		return 0;
 
-	nfields = hyle_source_get_field_count(source_id);
+	nfields = hyle_registry_get_field_count(source_id);
 
 	p = raw;
 	while (*p) {
@@ -75,11 +75,11 @@ int hyle_source_dsv_load(
 				char key[128];
 				vi = 0;
 				for (j = 0; j < nfields && vi < nparts; j++) {
-					if (hyle_source_get_field_type(
+					if (hyle_registry_get_field_type(
 					            source_id, j) ==
 					    HYLE_FIELD_INVERSE)
 						continue;
-					names[vi] = hyle_source_get_field_name(
+					names[vi] = hyle_registry_get_field_name(
 					        source_id, j);
 					vals[vi] = parts[vi];
 					vi++;
@@ -87,7 +87,7 @@ int hyle_source_dsv_load(
 				snprintf(
 				        key, sizeof(key), "%s__%04d", pval,
 				        pos);
-				hyle_source_put(
+				hyle_registry_put(
 				        source_id, key, names, vals, vi);
 				pos++;
 			}
@@ -119,25 +119,25 @@ int hyle_source_dsv_save(
 	if (!fp)
 		return -1;
 
-	nfields = hyle_source_get_field_count(source_id);
-	n = hyle_source_ordered_count(source_id, pval);
+	nfields = hyle_registry_get_field_count(source_id);
+	n = hyle_ordered_count(source_id, pval);
 	for (i = 0; i < n; i++) {
 		const char *key;
 		int first;
 
-		key = hyle_source_ordered_key_at(source_id, pval, i);
+		key = hyle_ordered_key_at(source_id, pval, i);
 		if (!key)
 			continue;
 		first = 1;
 		for (j = 0; j < nfields; j++) {
 			const char *val;
 
-			if (hyle_source_get_field_type(source_id, j) ==
+			if (hyle_registry_get_field_type(source_id, j) ==
 			    HYLE_FIELD_INVERSE)
 				continue;
 			val = qmap_field_get(
 			        fhd, key,
-			        hyle_source_get_field_name(source_id, j));
+			        hyle_registry_get_field_name(source_id, j));
 			if (first) {
 				fprintf(fp, "%s", val ? val : "");
 				first = 0;
