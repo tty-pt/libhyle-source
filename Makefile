@@ -1,6 +1,9 @@
+FOLDER := hyle-source
+
 all := libhyle-source
 
 LDLIBS-libhyle-source := -lhyle -lqmap -lstoma -ljson-c
+LDLIBS-libhyle-source-Darwin += -liconv
 
 libhyle-source-obj-y := src/source_utils.o src/store_fs.o src/store_mem.o src/meta.o src/dsv.o src/json.o src/engine.o src/options.o
 

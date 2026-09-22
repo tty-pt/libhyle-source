@@ -11,6 +11,7 @@ jobs:
     with:
       name: libhyle-source
       deps: "libhyle,libqmap,libstoma"
+      deps_openbsd: "libhyle,libqmap,libstoma,json-c"
       deps_deb: "libqsys,libqmap,libstoma,libhyle,libjson-c-dev"
       deps_apk: "libqsys,libqmap,libstoma,libhyle,json-c-dev"
       deps_rpm: "libqsys,libqmap,libstoma,libhyle,json-c-devel"
