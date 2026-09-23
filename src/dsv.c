@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include <ttypt/qmap.h>
+#include <ttypt/corm.h>
 #include <hyle/registry.h>
 
 static void dsv_path(
@@ -135,7 +135,7 @@ int hyle_source_dsv_save(
 			if (hyle_registry_get_field_type(source_id, j) ==
 			    HYLE_FIELD_INVERSE)
 				continue;
-			val = qmap_field_get(
+			val = corm_field_get(
 			        fhd, key,
 			        hyle_registry_get_field_name(source_id, j));
 			if (first) {

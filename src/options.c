@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include <ttypt/qmap.h>
+#include <ttypt/corm.h>
 #include <hyle/registry.h>
 
 int hyle_source_get_display_field(const char *dataset_id, char *out, size_t sz)
@@ -49,8 +49,8 @@ int hyle_source_get_display_field(const char *dataset_id, char *out, size_t sz)
 	if (!schema_hd)
 		return -1;
 
-	cur = qmap_iter(schema_hd, NULL, 0);
-	while (qmap_next(&key, &val, cur)) {
+	cur = corm_iter(schema_hd, NULL, 0);
+	while (corm_next(&key, &val, cur)) {
 		if (strcmp((const char *)key, "id") == 0)
 			continue;
 		if (val && strstr((const char *)val, "\"i\":"))
@@ -58,7 +58,7 @@ int hyle_source_get_display_field(const char *dataset_id, char *out, size_t sz)
 		snprintf(out, sz, "%s", (const char *)key);
 		break;
 	}
-	qmap_fin(cur);
+	corm_fin(cur);
 	return out[0] ? 0 : -1;
 }
 
@@ -93,7 +93,7 @@ const char *hyle_source_get_item_label(
 	if (display_field && display_field[0]) {
 		char name_key[320];
 		snprintf(name_key, sizeof(name_key), "%s:%s", row_id, display_field);
-		name = (const char *)qmap_get(fields_hd, name_key);
+		name = (const char *)corm_get(fields_hd, name_key);
 	}
 
 	const char *res = name ? name : row_id;
@@ -135,14 +135,14 @@ int hyle_source_resolve_options(
 	if (!result_hd)
 		return 0;
 
-	total_str = (const char *)qmap_get(result_hd, "__total__");
+	total_str = (const char *)corm_get(result_hd, "__total__");
 	if (total_out)
 		*total_out = total_str ? atoi(total_str) : 0;
 
 	hyle_source_get_display_field(dataset_id, display_field, sizeof(display_field));
 
-	cur = qmap_iter(result_hd, NULL, 0);
-	while (n < max && qmap_next(&rkey, &rval, cur)) {
+	cur = corm_iter(result_hd, NULL, 0);
+	while (n < max && corm_next(&rkey, &rval, cur)) {
 		const char *row_id;
 		const char *name;
 
@@ -156,8 +156,8 @@ int hyle_source_resolve_options(
 		opts[n].label = name;
 		n++;
 	}
-	qmap_fin(cur);
-	qmap_close(result_hd);
+	corm_fin(cur);
+	corm_close(result_hd);
 	return n;
 }
 
@@ -201,7 +201,7 @@ int hyle_source_resolve_tokens(
 
 		if (ttrim[0]) {
 			if (strspn(ttrim, "0123456789") == strlen(ttrim)) {
-				slug = qmap_get_key(
+				slug = corm_get_key(
 				        fields_hd, (uint32_t)atoi(ttrim));
 				if (slug && !slug[0])
 					slug = NULL;
@@ -211,16 +211,16 @@ int hyle_source_resolve_tokens(
 				        ttrim, strlen(ttrim), slug_buf,
 				        sizeof(slug_buf));
 				if (slug_buf[0] &&
-				    qmap_pos(fields_hd, slug_buf) != UINT32_MAX)
-					slug = qmap_get_key(
+				    corm_pos(fields_hd, slug_buf) != UINT32_MAX)
+					slug = corm_get_key(
 					        fields_hd,
-					        qmap_pos(fields_hd, slug_buf));
+					        corm_pos(fields_hd, slug_buf));
 			}
 			if (!slug) {
-				if (qmap_pos(fields_hd, ttrim) != UINT32_MAX)
-					slug = qmap_get_key(
+				if (corm_pos(fields_hd, ttrim) != UINT32_MAX)
+					slug = corm_get_key(
 					        fields_hd,
-					        qmap_pos(fields_hd, ttrim));
+					        corm_pos(fields_hd, ttrim));
 			}
 			if (!slug) {
 				if (!slug_buf[0])
@@ -291,7 +291,7 @@ int hyle_source_normalize_tokens_to_slugs(
 
 		if (ttrim[0]) {
 			if (strspn(ttrim, "0123456789") == strlen(ttrim)) {
-				slug = qmap_get_key(
+				slug = corm_get_key(
 				        fields_hd, (uint32_t)atoi(ttrim));
 				if (slug && !slug[0])
 					slug = NULL;
@@ -303,11 +303,11 @@ int hyle_source_normalize_tokens_to_slugs(
 				        ttrim, strlen(ttrim), slug_buf,
 				        sizeof(slug_buf));
 				if (slug_buf[0] &&
-				    qmap_pos(fields_hd, slug_buf) != UINT32_MAX)
+				    corm_pos(fields_hd, slug_buf) != UINT32_MAX)
 				{
-					slug = qmap_get_key(
+					slug = corm_get_key(
 					        fields_hd,
-					        qmap_pos(fields_hd, slug_buf));
+					        corm_pos(fields_hd, slug_buf));
 				} else {
 					unsigned result_hd;
 					char qs[512];
@@ -316,16 +316,16 @@ int hyle_source_normalize_tokens_to_slugs(
 					        display_field, ttrim);
 					result_hd = hyle_source_query_dataset(dataset_id, qs);
 					if (result_hd) {
-						uint32_t cur = qmap_iter(result_hd, NULL, 0);
+						uint32_t cur = corm_iter(result_hd, NULL, 0);
 						const void *rk, *rv;
-						while (qmap_next(&rk, &rv, cur)) {
+						while (corm_next(&rk, &rv, cur)) {
 							if (strcmp((const char *)rk, "__total__") != 0) {
 								slug = (const char *)rk;
 								break;
 							}
 						}
-						qmap_fin(cur);
-						qmap_close(result_hd);
+						corm_fin(cur);
+						corm_close(result_hd);
 					}
 				}
 			}
@@ -363,8 +363,8 @@ int hyle_source_get_enum_options(
 
 	hyle_source_get_display_field(dataset_id, display_field, sizeof(display_field));
 
-	cur = qmap_iter(row_hd, NULL, 0);
-	while (qmap_next(&key, &val, cur) && nopts < pool_avail) {
+	cur = corm_iter(row_hd, NULL, 0);
+	while (corm_next(&key, &val, cur) && nopts < pool_avail) {
 		const char *row_id = (const char *)key;
 		snprintf(id_buf[nopts], sizeof(id_buf[nopts]), "%s", row_id);
 		const char *name = hyle_source_get_item_label(
@@ -373,7 +373,7 @@ int hyle_source_get_enum_options(
 		pool[nopts].label = name;
 		nopts++;
 	}
-	qmap_fin(cur);
+	corm_fin(cur);
 
 	return nopts;
 }
@@ -445,10 +445,10 @@ int hyle_source_ordered_sync_form_custom(
 					/* Auto-resolve partition references if any */
 					unsigned song_fhd = hyle_source_get_fields_hd("song.items");
 					unsigned repo_fhd = hyle_source_get_fields_hd("grp.songs");
-					if (song_fhd && repo_fhd && qmap_pos(song_fhd, row_vals[f]) == QM_MISS) {
-						uint32_t rp = qmap_pos(repo_fhd, row_vals[f]);
-						if (rp != QM_MISS) {
-							const char *rs = qmap_field_get(repo_fhd, row_vals[f], "song");
+					if (song_fhd && repo_fhd && corm_pos(song_fhd, row_vals[f]) == CM_MISS) {
+						uint32_t rp = corm_pos(repo_fhd, row_vals[f]);
+						if (rp != CM_MISS) {
+							const char *rs = corm_field_get(repo_fhd, row_vals[f], "song");
 							if (rs && rs[0])
 								snprintf(row_vals[f], sizeof(row_vals[f]), "%s", rs);
 						}
@@ -489,7 +489,7 @@ const char *hyle_source_ordered_get_field(
 	unsigned fhd = hyle_source_get_fields_hd(source_id);
 	if (!fhd)
 		return NULL;
-	return hyle_qmap_get_field_str(fhd, key, field);
+	return hyle_corm_get_field_str(fhd, key, field);
 }
 
 int hyle_source_ordered_set_field(
@@ -601,7 +601,7 @@ const char *hyle_source_get_field(
 	unsigned fhd = hyle_source_get_fields_hd(source_id);
 	if (!fhd)
 		return NULL;
-	return hyle_qmap_get_field_str(fhd, item_id, field);
+	return hyle_corm_get_field_str(fhd, item_id, field);
 }
 
 int hyle_source_set_field(
@@ -610,16 +610,16 @@ int hyle_source_set_field(
 {
 	if (!source_id || !item_id || !field)
 		return -1;
-	unsigned dh = qmap_open(NULL, "row_data", QM_STR, QM_STR, 0x1F, 0);
+	unsigned dh = corm_open(NULL, "row_data", CM_STR, CM_STR, 0x1F, 0);
 	if (!dh)
 		return -1;
-	qmap_put(dh, field, value ? value : "");
+	corm_put(dh, field, value ? value : "");
 	int rc = hyle_source_update_item(fd, source_id, item_id, dh);
-	qmap_close(dh);
+	corm_close(dh);
 
 	unsigned fhd = hyle_source_get_fields_hd(source_id);
 	if (fhd)
-		qmap_field_put(fhd, item_id, field, value ? value : "");
+		corm_field_put(fhd, item_id, field, value ? value : "");
 
 	return rc == 0 ? 0 : (fhd ? 0 : rc);
 }

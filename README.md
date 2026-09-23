@@ -72,7 +72,7 @@ and `_get_enum_options` build the option pools that feed picker dropdowns;
 handle inverse-relation bookkeeping.
 
 **Form parsing & file utilities** — `hyle_source_parse_row_data_custom`
-rehydrates submitted form data into a qmap handle via `hyle_field_getter_fn` /
+rehydrates submitted form data into a corm handle via `hyle_field_getter_fn` /
 `hyle_multi_field_getter_fn` callbacks; `hyle_source_get_field(_int)` /
 `set_field(_int)` give ergonomic record access; `hyle_source_is_safe_id`,
 `_slurp_file`, `_write_file`, `_remove_path_recursive`, `_resolve_doc_root` back
@@ -99,10 +99,10 @@ cc my_app.c $(pkg-config --cflags --libs hyle-source)
 ```
 
 `hyle-source.pc` carries the dependency chain
-(`-lhyle-source -lhyle -lqmap -lstoma -ljson-c`; Darwin adds `-liconv`).
+(`-lhyle-source -lhyle -lcorm -lstoma -ljson-c`; Darwin adds `-liconv`).
 
 **Dependencies:** `external/libhyle` (schemas + registry/query),
-`external/libqmap`, `external/stoma` (full-text search), and `json-c`.
+`external/libcorm`, `external/stoma` (full-text search), and `json-c`.
 No framework, no network, no UI.
 
 ## Quickstart
@@ -163,7 +163,7 @@ int main(void)
 
 	/* Full-text search over id + string fields. */
 	unsigned qh = hyle_source_query_dataset("album", "love");
-	const char *total = qh ? qmap_get(qh, "__total__") : NULL;
+	const char *total = qh ? corm_get(qh, "__total__") : NULL;
 	printf("search \"love\": %s match%s\n",
 	       total ? total : "0", total && strcmp(total, "1") ? "es" : "");
 	return 0;
@@ -186,7 +186,7 @@ Full signatures live in `include/hyle-source/*.h` (`hyle_source.h`, `store.h`,
 `hyle_source_item_exists`, `hyle_source_clear_inverse_refs`,
 `hyle_source_get_field(_int)` / `hyle_source_set_field(_int)`.
 
-**Querying** — `hyle_source_query_dataset`, `hyle_qmap_get_field_str`.
+**Querying** — `hyle_source_query_dataset`, `hyle_corm_get_field_str`.
 
 **Storage drivers** — `hyle_source_store_ops_t`, `hyle_source_store_fs`,
 `hyle_source_store_fs_ops`, `hyle_source_store_mem`,

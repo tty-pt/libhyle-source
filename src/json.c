@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <json-c/json.h>
-#include <ttypt/qmap.h>
+#include <ttypt/corm.h>
 
 static json_object *hyle_source_build_string_array(const char *input)
 {
@@ -54,12 +54,12 @@ static json_object *hyle_source_build_inverse_array(
 	if (!target || !target->fields_hd)
 		return json_object_new_array();
 
-	uint32_t pos = qmap_pos(def->fields_hd, item_id);
+	uint32_t pos = corm_pos(def->fields_hd, item_id);
 	if (pos == UINT32_MAX)
 		return json_object_new_array();
 
 	uint32_t inv_buf[256];
-	size_t count = qmap_inv_get(
+	size_t count = corm_inv_get(
 	        target->fields_hd, field->inverse_name, pos, inv_buf, 256);
 
 	json_object *ja = json_object_new_array();
@@ -67,7 +67,7 @@ static json_object *hyle_source_build_inverse_array(
 		return json_object_new_array();
 
 	for (size_t i = 0; i < count; i++) {
-		const char *key = qmap_get_key(target->fields_hd, inv_buf[i]);
+		const char *key = corm_get_key(target->fields_hd, inv_buf[i]);
 		if (key) {
 			json_object_array_add(ja, json_object_new_string(key));
 		}
@@ -90,7 +90,7 @@ int hyle_source_build_item_json(
 			continue;
 
 		const char *val =
-		        qmap_field_get(def->fields_hd, item_id, f->name);
+		        corm_field_get(def->fields_hd, item_id, f->name);
 
 		switch (f->type) {
 		case HYLE_FIELD_STRING:
@@ -180,7 +180,7 @@ int hyle_source_build_state_json(
 	if (!def || !item_id || !item_id[0])
 		return -1;
 
-	if (!qmap_get(def->source_hd, item_id)) {
+	if (!corm_get(def->source_hd, item_id)) {
 		if (hyle_source_refresh_row(0, dataset_id, item_id) != 0)
 			return -1;
 	}

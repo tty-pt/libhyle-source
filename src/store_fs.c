@@ -9,7 +9,7 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <errno.h>
-#include <ttypt/qmap.h>
+#include <ttypt/corm.h>
 #include <hyle/hyle.h>
 #include <hyle/registry.h>
 
@@ -168,7 +168,7 @@ static int fs_put(hyle_source_store_t *store, const hyle_source_def_t *def,
 			continue;
 		if (!f->file)
 			continue;
-		const char *val = qmap_get(data_handle, f->name);
+		const char *val = corm_get(data_handle, f->name);
 		char file_path[PATH_MAX + 256];
 		snprintf(file_path, sizeof(file_path), "%s/%s",
 		        item_path, f->file);

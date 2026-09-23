@@ -22,7 +22,7 @@ typedef struct {
 	int (*load)(hyle_source_store_t *store, const struct hyle_source_def_s *def,
 	            const char *id, unsigned *row_out);
 
-	/* Persist an entire record `id` represented by `data_handle` (qmap).
+	/* Persist an entire record `id` represented by `data_handle` (corm).
 	 * Returns 0 on success, negative error code on failure. */
 	int (*put)(hyle_source_store_t *store, const struct hyle_source_def_s *def,
 	           const char *id, unsigned data_handle);

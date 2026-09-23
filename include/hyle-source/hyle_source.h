@@ -133,7 +133,7 @@ int hyle_source_clear_inverse_refs(
     const char *dataset_id,
     const char *item_id);
 
-int hyle_source_def_to_qmap(
+int hyle_source_def_to_corm(
     const hyle_source_desc_t *defs, int count, void *out);
 
 int hyle_source_def_to_source_fields(
@@ -261,7 +261,7 @@ const char *hyle_source_inv_key_at(
     uint32_t target_pos,
     size_t index);
 
-const char *hyle_qmap_get_field_str(
+const char *hyle_corm_get_field_str(
     unsigned hd,
     const char *id,
     const char *field);
@@ -295,7 +295,7 @@ typedef int (*hyle_multi_field_getter_fn)(const char *name, char *buf, size_t sz
 
 /*
  * Parse submitted form data according to the schema definition and return
- * an opened qmap handle populated with (field_name -> value) entries.
+ * an opened corm handle populated with (field_name -> value) entries.
  */
 unsigned hyle_source_parse_row_data_custom(
     const hyle_source_def_t *def,
