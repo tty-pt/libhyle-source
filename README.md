@@ -4,18 +4,19 @@
 [![BSD-2-Clause](https://img.shields.io/badge/License-BSD--2--Clause-blue)](#)
 [![Pluggable drivers](https://img.shields.io/badge/storage-pluggable-16A34A)](#)
 
+> Standalone persistence engine for Hyle datasets.
+
 The standalone persistence engine for Hyle datasets: dataset definition and
 registration, record validation, CRUD through pluggable storage drivers,
 full-text querying, ordered DSV collections, metadata JSON, and JSON state
 overlays for SSR/WASM hydration. It keeps storage mechanics completely separate
 from the data schemas and query machinery in `libhyle`.
 
----
-
 ## Contents
 
 - [Features](#features)
-- [Build & install](#build--install)
+- [Install](#install)
+- [Build from source](#build-from-source)
 - [Quickstart](#quickstart)
 - [API overview](#api-overview)
 - [Consumers](#consumers)
@@ -83,12 +84,22 @@ presentation types (`hyle_option_t`, `hyle_picker_desc_t`, `hyle_picker_entry_t`
 `hyle_picker_view_t`, `hyle_picker_buffer_t`) in `<hyle-source/picker.h>`, plus
 the `HYLE_PICKER_*` capacity constants. `libhyle-bud` consumes them directly.
 
-## Build & install
+## Install
+
+Prebuilt packages are distributed on tty.pt for Linux (APT / Alpine / Arch /
+Fedora-RHEL), macOS (Homebrew), Windows (winget / MSYS2), and OpenBSD.
+Follow the [installation instructions](
+https://github.com/tty-pt/ci/blob/main/docs/install.md) and use
+**libhyle-source** as the package name.
+
+## Build from source
+
+The library builds with a plain `make` (the shared [`mk` include.mk](
+https://github.com/tty-pt/mk)):
 
 ```sh
-cd external/libhyle-source
 make          # lib/libhyle-source.so
-
+make test     # exercised end-to-end by the site suite (see Testing)
 sudo make install   # lib, headers, and hyle-source.pc → $(PREFIX), default /usr/local
 ```
 
@@ -101,8 +112,8 @@ cc my_app.c $(pkg-config --cflags --libs hyle-source)
 `hyle-source.pc` carries the dependency chain
 (`-lhyle-source -lhyle -lcorm -lstoma -ljson-c`; Darwin adds `-liconv`).
 
-**Dependencies:** `external/libhyle` (schemas + registry/query),
-`external/libcorm`, `external/stoma` (full-text search), and `json-c`.
+**Dependencies:** `libhyle` (schemas + registry/query), `libcorm`,
+`libstoma` (full-text search), and `json-c` (Darwin adds `libiconv`).
 No framework, no network, no UI.
 
 ## Quickstart
@@ -231,16 +242,21 @@ Full signatures live in `include/hyle-source/*.h` (`hyle_source.h`, `store.h`,
 |--------|-------|
 | Bud UI bridge (pickers, filters, forms) | `../libhyle-bud/` |
 | Site data layer (`source` module, handlers) | site modules |
-| Picker presentation contract | `../../docs/PICKERS.md` |
-| Schema hint contract | `../../docs/SCHEMA.md` |
+| Picker presentation contract | [PICKERS.md](https://github.com/tty-pt/site/blob/main/docs/PICKERS.md) |
+| Schema hint contract | [SCHEMA.md](https://github.com/tty-pt/site/blob/main/docs/SCHEMA.md) |
 
 ## Documentation
 
-- `../../docs/ARCHITECTURE.md` — where the persistence engine sits in the module graph
-- `../../docs/SCHEMA.md` — schema hint strings (`filter_style`, `filter_mode`, `allow_add`)
-- `../../docs/FILTERS.md` — the query/filter contract shared with consumers
-- `../../docs/PICKERS.md` — how the option pools feed the omni-dropdowns
-- `../../docs/C-ISOMORPHIC-BUD.md` — state overlays and hydration
+- [ARCHITECTURE.md](https://github.com/tty-pt/site/blob/main/docs/ARCHITECTURE.md)
+  — where the persistence engine sits in the module graph
+- [SCHEMA.md](https://github.com/tty-pt/site/blob/main/docs/SCHEMA.md) — schema
+  hint strings (`filter_style`, `filter_mode`, `allow_add`)
+- [FILTERS.md](https://github.com/tty-pt/site/blob/main/docs/FILTERS.md) — the
+  query/filter contract shared with consumers
+- [PICKERS.md](https://github.com/tty-pt/site/blob/main/docs/PICKERS.md) — how
+  the option pools feed the omni-dropdowns
+- [C-ISOMORPHIC-BUD.md](https://github.com/tty-pt/site/blob/main/docs/C-ISOMORPHIC-BUD.md)
+  — state overlays and hydration
 
 ## Testing
 
@@ -251,4 +267,4 @@ boundary-check` enforces module-layer rules.
 
 ## License
 
-BSD 2-Clause License. Copyright (c) 2026, tty-pt. See `../../LICENSE`.
+BSD 2-Clause License. Copyright (c) 2026, tty-pt. See `LICENSE`.
