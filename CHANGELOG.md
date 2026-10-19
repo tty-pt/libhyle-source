@@ -1,3 +1,8 @@
+## 1.1.0
+
+- **Lemma Full-Text Search Integration**: Updated persistence engine to link and consume `liblemma` instead of `libstoma`.
+- **Build & CI Hardening**: Updated Makefile and CI workflows to use updated ecosystem dependencies.
+
 ## 1.0.0
 
 - **First stable release** — the standalone persistence engine for Hyle datasets: dataset definition and registration, record validation, CRUD through pluggable storage drivers, full-text querying, ordered DSV collections, metadata JSON, and JSON state overlays for SSR/WASM hydration. Storage mechanics stay separate from the schemas/query machinery in `libhyle`.
@@ -11,4 +16,4 @@
 - **References & options**: `hyle_source_resolve_ref_display_str`, `_get_display_field`, `_get_item_label`, option pools (`_resolve_options`, `_resolve_tokens`, `_normalize_tokens_to_slugs`, `_get_enum_options`) feeding picker dropdowns, plus inverse-reference bookkeeping (`hyle_source_find_referencing`, `hyle_source_inv_keys`, `_clear_inverse_refs`).
 - **Forms & files**: `hyle_source_parse_row_data_custom` with `hyle_field_getter_fn`/`hyle_multi_field_getter_fn` callbacks; `hyle_source_is_safe_id`, `_slurp_file`, `_write_file`, `_remove_path_recursive`, `_resolve_doc_root`.
 - **Picker DTO ownership**: canonical home of the picker presentation types (`hyle_option_t`, `hyle_picker_desc_t`, `hyle_picker_entry_t`, `hyle_picker_view_t`, `hyle_picker_buffer_t`) in `<hyle-source/picker.h>`.
-- **Dependencies**: `libhyle`, `libcorm`, `libstoma` (FTS), `json-c` — no framework, no network, no UI.
+- **Dependencies**: `libhyle`, `libcorm`, `liblemma` (FTS), `json-c` — no framework, no network, no UI.

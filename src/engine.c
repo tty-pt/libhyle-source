@@ -12,7 +12,7 @@
 #include <limits.h>
 
 #include <ttypt/corm.h>
-#include <stoma/stoma.h>
+#include <ttypt/lemma.h>
 #include <hyle/hyle.h>
 #include <hyle/registry.h>
 

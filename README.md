@@ -110,10 +110,10 @@ cc my_app.c $(pkg-config --cflags --libs hyle-source)
 ```
 
 `hyle-source.pc` carries the dependency chain
-(`-lhyle-source -lhyle -lcorm -lstoma -ljson-c`; Darwin adds `-liconv`).
+(`-lhyle-source -lhyle -lcorm -llemma -ljson-c`; Darwin adds `-liconv`).
 
 **Dependencies:** `libhyle` (schemas + registry/query), `libcorm`,
-`libstoma` (full-text search), and `json-c` (Darwin adds `libiconv`).
+`liblemma` (full-text search), and `json-c` (Darwin adds `libiconv`).
 No framework, no network, no UI.
 
 ## Quickstart

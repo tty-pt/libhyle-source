@@ -2,8 +2,10 @@ FOLDER := hyle-source
 
 all := libhyle-source
 
-LDLIBS-libhyle-source := -lhyle -lcorm -lstoma -ljson-c
+LDLIBS-libhyle-source := -lhyle -lcorm -llemma -ljson-c
 LDLIBS-libhyle-source-Darwin += -liconv
+
+add-prefix := ../liblemma ../libcorm ../libhyle
 
 libhyle-source-obj-y := src/source_utils.o src/store_fs.o src/store_mem.o src/meta.o src/dsv.o src/json.o src/engine.o src/options.o
 
