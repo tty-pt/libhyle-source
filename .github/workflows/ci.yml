@@ -10,12 +10,12 @@ jobs:
     uses: tty-pt/ci/.github/workflows/all-in-one.yml@main
     with:
       name: libhyle-source
-      deps: "libhyle,libcorm,libstoma"
-      deps_openbsd: "libhyle,libcorm,libstoma,json-c"
-      deps_deb: "libqsys,libcorm,libstoma,libhyle,libjson-c-dev"
-      deps_apk: "libqsys,libcorm,libstoma,libhyle,json-c-dev"
-      deps_rpm: "libqsys,libcorm,libstoma,libhyle,json-c-devel"
-      deps_brew: "libqsys,libcorm,libstoma,libhyle,json-c"
+      deps: "libhyle,libcorm,liblemma"
+      deps_openbsd: "libhyle,libcorm,liblemma,json-c"
+      deps_deb: "libqsys,libcorm,liblemma,libhyle,libjson-c-dev"
+      deps_apk: "libqsys,libcorm,liblemma,libhyle,json-c-dev"
+      deps_rpm: "libqsys,libcorm,liblemma,libhyle,json-c-devel"
+      deps_brew: "libqsys,libcorm,liblemma,libhyle,json-c"
       publish_to: "deb,apk,rpm,brew,openbsd"
     secrets:
       HOST: ${{ secrets.OPENBSD_HOST }}
