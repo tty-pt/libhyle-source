@@ -15,6 +15,7 @@ from the data schemas and query machinery in `libhyle`.
 ## Contents
 
 - [Features](#features)
+- [Storage Architecture & Filesystem Layout](#storage-architecture--filesystem-layout)
 - [Install](#install)
 - [Build from source](#build-from-source)
 - [Quickstart](#quickstart)
@@ -83,6 +84,31 @@ the filesystem layer.
 presentation types (`hyle_option_t`, `hyle_picker_desc_t`, `hyle_picker_entry_t`,
 `hyle_picker_view_t`, `hyle_picker_buffer_t`) in `<hyle-source/picker.h>`, plus
 the `HYLE_PICKER_*` capacity constants. `libhyle-bud` consumes them directly.
+
+## Storage Architecture & Filesystem Layout
+
+`libhyle-source` structures dataset storage hierarchically under `DOCUMENT_ROOT`:
+
+```
+DOCUMENT_ROOT/
+└── items_path/
+    ├── <record_id_1>/
+    │   ├── item.json       <-- Canonical field data (title, year, etc.)
+    │   ├── meta.json       <-- Ownership, timestamps, revision metadata
+    │   └── assets/         <-- Optional binary blobs or attachments
+    └── <record_id_2>/
+        ├── item.json
+        └── meta.json
+```
+
+### Storage Drivers Comparison
+
+| Driver | Storage Target | Characteristics | Typical Usage |
+| :--- | :--- | :--- | :--- |
+| `hyle_source_store_fs` | Local filesystem | Persistent, human-readable JSON files, Git-versionable | Production site datasets, content catalogs |
+| `hyle_source_store_mem` | Volatile RAM | Ephemeral in-memory hash store, zero disk I/O | Fast test suites, temporary session datasets |
+
+---
 
 ## Install
 
