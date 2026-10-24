@@ -108,5 +108,18 @@ const hyle_source_store_ops_t *hyle_source_store_mem_ops(void);
  */
 hyle_source_store_t hyle_source_store_mem(void);
 
+/**
+ * @brief Tokenized binary storage driver ops (record.tok / .tok layout).
+ * @return The tokenized driver ops table.
+ */
+const hyle_source_store_ops_t *hyle_source_store_tok_ops(void);
+
+/**
+ * @brief Construct a tokenized binary store.
+ * @param[in] items_path Base items directory.
+ * @return A tokenized store instance.
+ */
+hyle_source_store_t hyle_source_store_tok(const char *items_path);
+
 #endif
 
