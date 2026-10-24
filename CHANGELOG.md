@@ -1,9 +1,16 @@
-## 1.1.0
+## [1.2.0]
+
+- **Binary Token Store Driver (`store_tok`) & `data.tok`**:
+  - Added `store_tok` persistence driver supporting direct binary `.tok` record containers and companion `data.tok` tables.
+  - Shipped `hyle-tok` CLI tool for inspecting, migrating, and dumping binary token streams.
+  - Integrated subword tokenization with `liblemma`'s lossless tokenizer.
+
+## [1.1.0]
 
 - **Lemma Full-Text Search Integration**: Updated persistence engine to link and consume `liblemma` instead of `libstoma`.
 - **Build & CI Hardening**: Updated Makefile and CI workflows to use updated ecosystem dependencies.
 
-## 1.0.0
+## [1.0.0]
 
 - **First stable release** — the standalone persistence engine for Hyle datasets: dataset definition and registration, record validation, CRUD through pluggable storage drivers, full-text querying, ordered DSV collections, metadata JSON, and JSON state overlays for SSR/WASM hydration. Storage mechanics stay separate from the schemas/query machinery in `libhyle`.
 - **Dataset definitions**: `hyle_source_def_t` (`id`, `key_field`, `items_path`, fields, access policy `PUBLIC`/`LOGIN`, list view, storage driver); `hyle_source_register_def` wires a def into the Hyle registry (fields + row maps + FTS), `hyle_source_setup` bootstraps a full dataset in one call.
