@@ -4,6 +4,8 @@
 #include <string.h>
 #include <json-c/json.h>
 #include <ttypt/corm.h>
+#include <ttypt/lemma.h>
+#include <hyle/registry.h>
 
 static json_object *hyle_source_build_string_array(const char *input)
 {
@@ -89,8 +91,9 @@ int hyle_source_build_item_json(
 		if (strcmp(f->name, "id") == 0)
 			continue;
 
-		const char *val =
-		        corm_field_get(def->fields_hd, item_id, f->name);
+		const char *val = hyle_field_get_str(def->id, item_id, f->name);
+		if (!val)
+			val = corm_field_get(def->fields_hd, item_id, f->name);
 
 		switch (f->type) {
 		case HYLE_FIELD_STRING:

@@ -57,6 +57,11 @@ static int fs_load(hyle_source_store_t *store, const hyle_source_def_t *def,
 	struct stat st;
 	if (lstat(item_path, &st) != 0 || !S_ISDIR(st.st_mode))
 		return -1;
+	char record_tok_path[PATH_MAX + 64];
+	snprintf(record_tok_path, sizeof(record_tok_path), "%s/record.tok", item_path);
+	if (access(record_tok_path, R_OK) == 0) {
+		return hyle_source_store_tok(items_path).ops->load(store, def, id, row_out);
+	}
 	const char *names[64];
 	const char *values[64];
 	size_t k = 0;
@@ -187,6 +192,8 @@ static int fs_put(hyle_source_store_t *store, const hyle_source_def_t *def,
 			}
 		}
 	}
+	/* Also write binary record.tok container */
+	hyle_source_store_tok(items_path).ops->put(store, def, id, data_handle);
 	return 0;
 }
 

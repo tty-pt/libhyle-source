@@ -1,6 +1,8 @@
 CFLAGS-libhyle-source-o := -fPIC -I../libhyle/include -I../libcorm/include -I../liblemma/include
 CFLAGS-source_utils-o := -fPIC -I../libhyle/include -I../libcorm/include -I../liblemma/include
 CFLAGS-store_fs-o := -fPIC -I../libhyle/include -I../libcorm/include -I../liblemma/include
+CFLAGS-store_tok-o := -fPIC -I../libhyle/include -I../libcorm/include -I../liblemma/include
+CFLAGS-hyle-tok-o := -I../libhyle/include -I../libcorm/include -I../liblemma/include
 CFLAGS-store_mem-o := -fPIC -I../libhyle/include -I../libcorm/include -I../liblemma/include
 CFLAGS-meta-o := -fPIC -I../libhyle/include -I../libcorm/include -I../liblemma/include
 CFLAGS-dsv-o := -fPIC -I../libhyle/include -I../libcorm/include -I../liblemma/include
