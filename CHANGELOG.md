@@ -1,4 +1,4 @@
-## [1.2.0]
+## [1.3.0]
 
 - **Binary Token Store Driver (`store_tok`) & `data.tok`**:
   - Added `store_tok` persistence driver supporting direct binary `.tok` record containers and companion `data.tok` tables.
