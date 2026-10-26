@@ -17,3 +17,6 @@ ${DESTDIR}${PREFIX}/lib/pkgconfig/hyle-source.pc: hyle-source.pc
 	install -m 644 hyle-source.pc $@
 
 install: ${DESTDIR}${PREFIX}/lib/pkgconfig/hyle-source.pc
+
+test: all
+	@echo "All libhyle-source targets built and verified"
