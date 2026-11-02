@@ -1,5 +1,6 @@
-## [1.3.0]
+## [1.3.1]
 
+- **Universal Substrate Migration**: Migrated core platform dependencies from legacy `libqsys` to `libstele` (`-lstele`).
 - **Binary Token Store Driver (`store_tok`) & `data.tok`**:
   - Added `store_tok` persistence driver supporting direct binary `.tok` record containers and companion `data.tok` tables.
   - Shipped `hyle-tok` CLI tool for inspecting, migrating, and dumping binary token streams.
