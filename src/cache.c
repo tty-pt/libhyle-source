@@ -662,3 +662,66 @@ void hyle_source_notify_change(
 		}
 	}
 }
+
+int hyle_source_optimistic_update(
+        const char *dataset_id,
+        const char *item_id,
+        const char *patch_json,
+        size_t len,
+        char *rollback_snapshot_out,
+        size_t rollback_cap)
+{
+	if (!dataset_id || !dataset_id[0] || !item_id || !item_id[0] || !patch_json)
+		return -1;
+	if (len == 0)
+		len = strlen(patch_json);
+
+	/* 1. Capture current entity record as rollback snapshot */
+	size_t cur_len = 0;
+	const char *cur = hyle_source_entity_cache_get(dataset_id, item_id, &cur_len);
+	if (cur && cur_len > 0) {
+		if (rollback_snapshot_out && rollback_cap > 0) {
+			size_t copy_len = cur_len < (rollback_cap - 1) ? cur_len : (rollback_cap - 1);
+			memcpy(rollback_snapshot_out, cur, copy_len);
+			rollback_snapshot_out[copy_len] = '\0';
+		}
+	} else {
+		if (rollback_snapshot_out && rollback_cap > 0) {
+			rollback_snapshot_out[0] = '\0';
+		}
+	}
+
+	/* 2. Write optimistic patch to entity cache */
+	int rc = hyle_source_entity_cache_put(dataset_id, item_id, patch_json, len);
+	if (rc != 0)
+		return rc;
+
+	/* 3. Invalidate query slice cache for this dataset */
+	hyle_source_cache_invalidate(dataset_id);
+
+	/* 4. Immediately notify subscribers */
+	hyle_source_notify_change(dataset_id, item_id, HYLE_SOURCE_CHANGE_UPDATE);
+	return 0;
+}
+
+int hyle_source_optimistic_rollback(
+        const char *dataset_id,
+        const char *item_id,
+        const char *rollback_snapshot,
+        size_t len)
+{
+	if (!dataset_id || !dataset_id[0] || !item_id || !item_id[0])
+		return -1;
+
+	if (rollback_snapshot && rollback_snapshot[0]) {
+		if (len == 0)
+			len = strlen(rollback_snapshot);
+		hyle_source_entity_cache_put(dataset_id, item_id, rollback_snapshot, len);
+	} else {
+		hyle_source_entity_cache_invalidate(dataset_id, item_id);
+	}
+
+	hyle_source_cache_invalidate(dataset_id);
+	hyle_source_notify_change(dataset_id, item_id, HYLE_SOURCE_CHANGE_UPDATE);
+	return 0;
+}

@@ -154,6 +154,17 @@ export declare function subscribeDataset(
 
 export declare const subscribe: typeof subscribeDataset;
 
+export interface OptimisticHandle {
+  rollback: () => void;
+}
+
+export declare function optimisticUpdate(
+  datasetId: string,
+  itemId: string,
+  patch: Record<string, any> | string,
+  options?: HyleCallOpts
+): OptimisticHandle;
+
 export declare function createHyleStore(datasetId: string, options?: HyleCallOpts): HyleExternalStore;
 
 export declare function slugify(text: string): string;
@@ -189,6 +200,7 @@ export declare class HyleSource {
   entityCount(datasetId?: string): number;
 
   subscribe(datasetId: string, callback: HyleSubscriberCb): UnsubscribeFn;
+  optimisticUpdate(datasetId: string, itemId: string, patch: Record<string, any> | string): OptimisticHandle;
   createStore(datasetId: string): HyleExternalStore;
 }
 
@@ -216,6 +228,7 @@ declare const _default: {
   entityCount: typeof entityCount;
   subscribeDataset: typeof subscribeDataset;
   subscribe: typeof subscribe;
+  optimisticUpdate: typeof optimisticUpdate;
   createHyleStore: typeof createHyleStore;
   slugify: typeof slugify;
   version: typeof version;

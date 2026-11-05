@@ -377,6 +377,89 @@ static napi_value NapiUnsubscribe(napi_env env, napi_callback_info info) {
     return res;
 }
 
+static napi_value NapiOptimisticUpdate(napi_env env, napi_callback_info info) {
+    size_t argc = 3;
+    napi_value args[3];
+    napi_status status = napi_get_cb_info(env, info, &argc, args, NULL, NULL);
+    if (status != napi_ok || argc < 3) {
+        napi_throw_type_error(env, NULL, "Expected (datasetId, itemId, patchJson)");
+        return NULL;
+    }
+
+    char dataset_id[128] = {0};
+    size_t d_len = 0;
+    napi_get_value_string_utf8(env, args[0], dataset_id, sizeof(dataset_id) - 1, &d_len);
+
+    char item_id[128] = {0};
+    size_t i_len = 0;
+    napi_get_value_string_utf8(env, args[1], item_id, sizeof(item_id) - 1, &i_len);
+
+    size_t json_len = 0;
+    napi_get_value_string_utf8(env, args[2], NULL, 0, &json_len);
+    char *json_buf = (char *)malloc(json_len + 1);
+    if (!json_buf) {
+        napi_throw_error(env, NULL, "Out of memory");
+        return NULL;
+    }
+    napi_get_value_string_utf8(env, args[2], json_buf, json_len + 1, &json_len);
+
+    char rollback_buf[65536] = {0};
+    int rc = hyle_source_optimistic_update(dataset_id, item_id, json_buf, json_len, rollback_buf, sizeof(rollback_buf));
+    free(json_buf);
+
+    if (rc != 0) {
+        napi_throw_error(env, NULL, "Optimistic update failed");
+        return NULL;
+    }
+
+    napi_value res_val;
+    if (rollback_buf[0]) {
+        napi_create_string_utf8(env, rollback_buf, NAPI_AUTO_LENGTH, &res_val);
+    } else {
+        napi_get_null(env, &res_val);
+    }
+    return res_val;
+}
+
+static napi_value NapiOptimisticRollback(napi_env env, napi_callback_info info) {
+    size_t argc = 3;
+    napi_value args[3];
+    napi_status status = napi_get_cb_info(env, info, &argc, args, NULL, NULL);
+    if (status != napi_ok || argc < 2) {
+        napi_throw_type_error(env, NULL, "Expected (datasetId, itemId, [rollbackSnapshot])");
+        return NULL;
+    }
+
+    char dataset_id[128] = {0};
+    size_t d_len = 0;
+    napi_get_value_string_utf8(env, args[0], dataset_id, sizeof(dataset_id) - 1, &d_len);
+
+    char item_id[128] = {0};
+    size_t i_len = 0;
+    napi_get_value_string_utf8(env, args[1], item_id, sizeof(item_id) - 1, &i_len);
+
+    char *snap_buf = NULL;
+    size_t snap_len = 0;
+    if (argc >= 3) {
+        napi_valuetype vt;
+        napi_typeof(env, args[2], &vt);
+        if (vt == napi_string) {
+            napi_get_value_string_utf8(env, args[2], NULL, 0, &snap_len);
+            snap_buf = (char *)malloc(snap_len + 1);
+            if (snap_buf) {
+                napi_get_value_string_utf8(env, args[2], snap_buf, snap_len + 1, &snap_len);
+            }
+        }
+    }
+
+    int rc = hyle_source_optimistic_rollback(dataset_id, item_id, snap_buf, snap_len);
+    if (snap_buf) free(snap_buf);
+
+    napi_value result;
+    napi_create_int32(env, rc, &result);
+    return result;
+}
+
 
 static napi_value NapiCachePut(napi_env env, napi_callback_info info) {
     size_t argc = 3;
@@ -897,6 +980,8 @@ NAPI_MODULE_INIT() {
     NAPI_EXPORT_FN("entityCount", NapiEntityCount);
     NAPI_EXPORT_FN("subscribe", NapiSubscribe);
     NAPI_EXPORT_FN("unsubscribe", NapiUnsubscribe);
+    NAPI_EXPORT_FN("optimisticUpdate", NapiOptimisticUpdate);
+    NAPI_EXPORT_FN("optimisticRollback", NapiOptimisticRollback);
     NAPI_EXPORT_FN("registerDataset", NapiRegisterDataset);
     NAPI_EXPORT_FN("updateItem", NapiUpdateItem);
     NAPI_EXPORT_FN("deleteItem", NapiDeleteItem);

@@ -733,6 +733,38 @@ static void queue_change_event(const char *dataset_id, const char *item_id, cons
     ev->action[alen] = '\0';
 }
 
+ISO_EXPORT(int, hyle_source_wasm_optimistic_update, const char *dataset_id, const char *item_id, const char *patch_json, size_t len, char *rollback_out, size_t rollback_cap) {
+    if (!dataset_id || !dataset_id[0] || !item_id || !item_id[0] || !patch_json) return -1;
+    if (len == 0) len = wasm_strlen(patch_json);
+
+    if (rollback_out && rollback_cap > 0) {
+        int copied = hyle_source_wasm_entity_get(dataset_id, item_id, rollback_out, rollback_cap);
+        if (copied < 0) {
+            rollback_out[0] = '\0';
+        }
+    }
+
+    int rc = hyle_source_wasm_entity_put(dataset_id, item_id, patch_json, len);
+    if (rc != 0) return rc;
+
+    queue_change_event(dataset_id, item_id, "update");
+    return 0;
+}
+
+ISO_EXPORT(int, hyle_source_wasm_optimistic_rollback, const char *dataset_id, const char *item_id, const char *rollback_snapshot, size_t len) {
+    if (!dataset_id || !dataset_id[0] || !item_id || !item_id[0]) return -1;
+
+    if (rollback_snapshot && rollback_snapshot[0]) {
+        if (len == 0) len = wasm_strlen(rollback_snapshot);
+        hyle_source_wasm_entity_put(dataset_id, item_id, rollback_snapshot, len);
+    } else {
+        hyle_source_wasm_entity_invalidate(dataset_id, item_id);
+    }
+
+    queue_change_event(dataset_id, item_id, "update");
+    return 0;
+}
+
 ISO_EXPORT(int, hyle_source_wasm_subscribe, const char *dataset_id) {
     for (size_t i = 0; i < WASM_MAX_SUBSCRIBERS; i++) {
         if (!g_subs[i].active) {

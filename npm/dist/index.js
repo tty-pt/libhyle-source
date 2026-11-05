@@ -322,6 +322,66 @@ export function updateItem(datasetId, itemId, record, options = {}) {
 
 export const putItem = updateItem;
 
+export function optimisticUpdate(datasetId, itemId, patch, options = {}) {
+  const prevSnapshot = entityGet(datasetId, itemId, options);
+
+  let merged;
+  if (prevSnapshot) {
+    try {
+      const prevObj = typeof prevSnapshot === "string" ? JSON.parse(prevSnapshot) : prevSnapshot;
+      const patchObj = typeof patch === "string" ? JSON.parse(patch) : patch;
+      merged = { ...prevObj, ...patchObj };
+    } catch {
+      merged = patch;
+    }
+  } else {
+    merged = patch;
+  }
+
+  const patchStr = typeof merged === "string" ? merged : JSON.stringify(merged);
+
+  if (!options.wasm && nativeBinding?.optimisticUpdate) {
+    const rawPrev = nativeBinding.optimisticUpdate(datasetId, itemId, patchStr);
+    return {
+      rollback: () => {
+        if (nativeBinding?.optimisticRollback) {
+          nativeBinding.optimisticRollback(datasetId, itemId, rawPrev);
+        }
+      }
+    };
+  }
+
+  const wasm = getHyleSourceWasm();
+  const substrate = getSubstrate();
+  let rollbackRaw = null;
+
+  substrate.withStrings([datasetId, itemId, patchStr], (dPtr, iPtr, pPtr) => {
+    const outCap = 65536;
+    const outPtr = substrate.malloc(outCap);
+    try {
+      if (wasm.exports.hyle_source_wasm_optimistic_update) {
+        wasm.exports.hyle_source_wasm_optimistic_update(dPtr, iPtr, pPtr, patchStr.length, outPtr, outCap);
+        rollbackRaw = substrate.readString(outPtr, 65536);
+      }
+    } finally {
+      substrate.free(outPtr);
+    }
+  });
+
+  notifyJsSubscribers(datasetId, itemId, "update");
+
+  return {
+    rollback: () => {
+      substrate.withStrings([datasetId, itemId, rollbackRaw || ""], (dPtr, iPtr, rPtr) => {
+        if (wasm.exports.hyle_source_wasm_optimistic_rollback) {
+          wasm.exports.hyle_source_wasm_optimistic_rollback(dPtr, iPtr, rPtr, rollbackRaw ? rollbackRaw.length : 0);
+        }
+      });
+      notifyJsSubscribers(datasetId, itemId, "update");
+    }
+  };
+}
+
 export function deleteItem(datasetId, itemId, options = {}) {
   if (!options.wasm && nativeBinding?.deleteItem) {
     return nativeBinding.deleteItem(datasetId, itemId);
@@ -544,6 +604,10 @@ export class HyleSource {
     return subscribeDataset(datasetId, callback, { wasm: this.useWasm });
   }
 
+  optimisticUpdate(datasetId, itemId, patch, options = {}) {
+    return optimisticUpdate(datasetId, itemId, patch, { ...options, wasm: this.useWasm });
+  }
+
   createStore(datasetId) {
     return createHyleStore(datasetId, { wasm: this.useWasm });
   }
@@ -573,6 +637,7 @@ export default {
   entityCount,
   subscribeDataset,
   subscribe,
+  optimisticUpdate,
   createHyleStore,
   slugify,
   version,

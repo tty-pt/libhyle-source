@@ -22,6 +22,7 @@ import {
   entityInvalidate,
   entityCount,
   subscribeDataset,
+  optimisticUpdate,
   createHyleStore,
   slugify,
   version,
@@ -374,6 +375,33 @@ test("@tty-pt/hyle-source framework-agnostic substrate cache & subscription bus"
   assert.equal(wasmHydrateRc, 0);
   assert.equal(wasm.entityCount("wasm_cat"), 3);
   assert.ok(wasm.entityGet("wasm_cat", "c3").includes("Widget Three"));
+
+  // 7. Optimistic Mutations & Rollback
+  source.entityPut("optimistic_ds", "opt1", { id: "opt1", status: "PENDING" });
+  assert.equal(source.entityGet("optimistic_ds", "opt1").includes("PENDING"), true);
+
+  const subscriberEvents = [];
+  const optUnsub = source.subscribe("optimistic_ds", (ds, item, action) => {
+    subscriberEvents.push({ ds, item, action });
+  });
+
+  // Apply optimistic update
+  const { rollback } = source.optimisticUpdate("optimistic_ds", "opt1", { status: "ACTIVE" });
+
+  // Entity cache immediately reflects updated status
+  const afterOpt = source.entityGet("optimistic_ds", "opt1");
+  assert.ok(afterOpt && afterOpt.includes("ACTIVE"), "Optimistic update must immediately update entity cache");
+  assert.equal(subscriberEvents.length, 1, "Subscribers must be notified immediately on optimistic update");
+
+  // Rollback on simulated network/backend write failure
+  rollback();
+
+  // Entity cache restored to PENDING
+  const afterRollback = source.entityGet("optimistic_ds", "opt1");
+  assert.ok(afterRollback && afterRollback.includes("PENDING"), "Rollback must restore prior entity snapshot");
+  assert.equal(subscriberEvents.length, 2, "Subscribers must be notified on rollback");
+
+  optUnsub();
 });
 
 

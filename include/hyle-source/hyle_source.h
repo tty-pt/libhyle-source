@@ -508,6 +508,20 @@ void hyle_source_notify_change(
     const char *item_id,
     hyle_source_change_type_t change_type);
 
+int hyle_source_optimistic_update(
+    const char *dataset_id,
+    const char *item_id,
+    const char *patch_json,
+    size_t len,
+    char *rollback_snapshot_out,
+    size_t rollback_cap);
+
+int hyle_source_optimistic_rollback(
+    const char *dataset_id,
+    const char *item_id,
+    const char *rollback_snapshot,
+    size_t len);
+
 
 
 /**
