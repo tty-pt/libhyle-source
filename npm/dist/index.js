@@ -1,5 +1,4 @@
 import { loadWasmModule, loadNativeAddon, getSubstrate } from "@tty-pt/stele";
-import path from "node:path";
 
 let nativeBinding = loadNativeAddon(import.meta.url, "hyle_source");
 let wasmInstance = null;
@@ -527,7 +526,7 @@ export class HyleSource {
   registerDataset(def) {
     const d = { ...def };
     if (!this.useWasm && !d.itemsPath && !d.path) {
-      d.itemsPath = path.join(this.storageDir, def.id);
+      d.itemsPath = `${this.storageDir.replace(/\/+$/, "")}/${def.id}`;
     }
     return registerDataset(d, { wasm: this.useWasm });
   }
