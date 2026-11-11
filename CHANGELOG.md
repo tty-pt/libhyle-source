@@ -1,3 +1,14 @@
+## [Unreleased] (target: v1.4.0)
+
+### Added
+- **NPM Package `@tty-pt/hyle-source` (`npm/`)**:
+  - Published dual native Node-API (`hyle_source_node.node`) and WebAssembly (`hyle-source.wasm`) package.
+  - Added TypeScript declarations in `npm/dist/index.d.ts` and comprehensive test suite in `npm/tests/hyle_source.test.mjs`.
+  - Added cache layer with optimistic updates and rollback hooks in `src/cache.c` and `include/hyle-source/hyle_source.h`.
+
+### Fixed
+- Eliminate static `node:path` import for browser bundling.
+
 ## [1.3.1]
 
 - **Universal Substrate Migration**: Migrated core platform dependencies from legacy `libqsys` to `libstele` (`-lstele`).

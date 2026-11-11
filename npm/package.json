@@ -1,0 +1,47 @@
+{
+  "name": "@tty-pt/hyle-source",
+  "version": "1.4.0",
+  "type": "module",
+  "description": "Universal Node.js and Browser WebAssembly bindings for libhyle-source Dataset Persistence & Query Engine",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "include",
+    "*.pc",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build:native": "mkdir -p build/Release && gcc -O3 -fPIC -shared -I/usr/include/node -I../include -I../../libcorm/include -I../../libhyle/include -I../../liblemma/include -I../../libstele/include native/hyle_source_napi.c ../src/cache.c -L../lib -Wl,-rpath,'$$ORIGIN/../../lib' -Wl,-rpath,../lib -L../../libcorm/lib -L/usr/lib -lhyle-source -lhyle -lcorm -llemma -lstele -ljson-c -o build/Release/hyle_source_node.node",
+    "build:wasm": "make -C .. wasm",
+    "build": "npm run build:native && npm run build:wasm",
+    "test": "node --test tests/hyle_source.test.mjs"
+  },
+  "peerDependencies": {
+    "@tty-pt/corm": ">=2.2.0",
+    "@tty-pt/hyle": ">=1.6.0",
+    "@tty-pt/stele": ">=1.5.0"
+  },
+  "devDependencies": {
+    "@tty-pt/corm": "^2.2.4",
+    "@tty-pt/hyle": "^1.6.1",
+    "@tty-pt/stele": "^1.5.2"
+  },
+  "keywords": [
+    "hyle",
+    "hyle-source",
+    "persistence",
+    "datasets",
+    "fts",
+    "query",
+    "napi"
+  ],
+  "author": "Paulo Quirino",
+  "license": "BSD-2-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tty-pt/libhyle-source.git",
+    "directory": "npm"
+  }
+}

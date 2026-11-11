@@ -401,6 +401,129 @@ unsigned hyle_source_query_dataset(
     const char *dataset_id,
     const char *query_str);
 
+/* ── Client-side in-memory cache for queries and table slices ─────────── */
+
+/**
+ * @brief Store a query result or table slice in the client-side cache.
+ * @param[in] dataset_id Dataset identifier (e.g. "song" or "song.items").
+ * @param[in] query_str  Query string or request key (e.g. "page=1&per_page=10...").
+ * @param[in] json       JSON state or response string to cache.
+ * @param[in] len        Length of @p json in bytes (or 0 to measure via strlen).
+ * @return 0 on success, negative on error.
+ */
+int hyle_source_cache_put(
+    const char *dataset_id, const char *query_str, const char *json,
+    size_t len);
+
+/**
+ * @brief Store a query result with explicit TTL in milliseconds.
+ */
+int hyle_source_cache_put_ttl(
+    const char *dataset_id, const char *query_str, const char *json,
+    size_t len, uint32_t ttl_ms);
+
+/**
+ * @brief Bulk hydrate a query slice into the client-side cache.
+ */
+int hyle_source_cache_hydrate(
+    const char *dataset_id, const char *query_str, const char *json,
+    size_t len, uint32_t ttl_ms);
+
+/**
+ * @brief Retrieve a cached query result or table slice.
+ * @param[in]  dataset_id Dataset identifier.
+ * @param[in]  query_str  Query string or request key.
+ * @param[out] len_out    Optional pointer to receive length in bytes.
+ * @return Pointer to cached JSON string, or NULL if not in cache.
+ */
+const char *hyle_source_cache_get(
+    const char *dataset_id, const char *query_str, size_t *len_out);
+
+/**
+ * @brief Retrieve a cached query result with stale-while-revalidate indicator.
+ */
+const char *hyle_source_cache_get_status(
+    const char *dataset_id, const char *query_str, size_t *len_out, int *is_stale);
+
+/**
+ * @brief Invalidate all cache entries matching a dataset identifier.
+ * @param[in] dataset_id Dataset identifier (or NULL to invalidate all datasets).
+ */
+void hyle_source_cache_invalidate(const char *dataset_id);
+
+/**
+ * @brief Clear all entries in the client-side cache.
+ */
+void hyle_source_cache_clear(void);
+
+/**
+ * @brief Return the number of active cached entries for a dataset.
+ * @param[in] dataset_id Dataset identifier (or NULL for total across all datasets).
+ * @return Number of cached entries.
+ */
+size_t hyle_source_cache_count(const char *dataset_id);
+
+/**
+ * @brief Normalize a query string into canonical key-sorted order.
+ */
+int hyle_source_normalize_query(const char *in_query, char *out_buf, size_t out_cap);
+
+/* ── Two-Tier Entity Record Cache ──────────────────────────────────────────── */
+
+int hyle_source_entity_cache_put(
+    const char *dataset_id, const char *item_id, const char *json, size_t len);
+
+const char *hyle_source_entity_cache_get(
+    const char *dataset_id, const char *item_id, size_t *len_out);
+
+void hyle_source_entity_cache_invalidate(
+    const char *dataset_id, const char *item_id);
+
+size_t hyle_source_entity_cache_count(const char *dataset_id);
+
+/* ── Change Event Types & Reactive Subscription Bus ────────────────────────── */
+
+typedef enum {
+    HYLE_SOURCE_CHANGE_PUT = 1,
+    HYLE_SOURCE_CHANGE_UPDATE,
+    HYLE_SOURCE_CHANGE_DELETE,
+    HYLE_SOURCE_CHANGE_INVALIDATE
+} hyle_source_change_type_t;
+
+typedef void (*hyle_source_change_cb_t)(
+    const char *dataset_id,
+    const char *item_id,
+    hyle_source_change_type_t change_type,
+    void *user_data);
+
+int hyle_source_subscribe(
+    const char *dataset_id,
+    hyle_source_change_cb_t cb,
+    void *user_data);
+
+int hyle_source_unsubscribe(int sub_id);
+
+void hyle_source_notify_change(
+    const char *dataset_id,
+    const char *item_id,
+    hyle_source_change_type_t change_type);
+
+int hyle_source_optimistic_update(
+    const char *dataset_id,
+    const char *item_id,
+    const char *patch_json,
+    size_t len,
+    char *rollback_snapshot_out,
+    size_t rollback_cap);
+
+int hyle_source_optimistic_rollback(
+    const char *dataset_id,
+    const char *item_id,
+    const char *rollback_snapshot,
+    size_t len);
+
+
+
 /**
  * @brief Item-records corm handle of a dataset.
  * @param[in] dataset_id Dataset id.
