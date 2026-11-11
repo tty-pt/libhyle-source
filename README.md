@@ -1,5 +1,6 @@
 # libhyle-source
 
+[![npm](https://img.shields.io/badge/npm-@tty--pt/hyle--source-CB3837?logo=npm)](npm/README.md)
 [![C99](https://img.shields.io/badge/C-C99-555?logo=c)](#)
 [![BSD-2-Clause](https://img.shields.io/badge/License-BSD--2--Clause-blue)](#)
 [![Pluggable drivers](https://img.shields.io/badge/storage-pluggable-16A34A)](#)
@@ -104,6 +105,20 @@ make                  # builds lib/libhyle-source.so and bin/hyle-tok
 make test             # run verification test suite
 sudo make install     # install headers, tool, and library to system
 ```
+
+---
+
+## 5. JavaScript & WebAssembly Bindings (`@tty-pt/hyle-source`)
+
+For browser, Node.js, and edge runtimes, `libhyle-source` ships an isomorphic WebAssembly storage package on npm:
+
+```sh
+npm install @tty-pt/hyle-source
+```
+
+See [npm/README.md](npm/README.md) for the full TypeScript and WebAssembly API reference.
+
+---
 
 ## License
 
