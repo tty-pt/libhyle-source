@@ -10,7 +10,6 @@ libhyle-source-obj-y := src/source_utils.o src/store_fs.o src/store_tok.o src/st
 
 WASM_SRCS := npm/wasm/hyle_source_wasm.c
 WASM_EXTRA_CFLAGS := -I../mk/include -I../libstele/include
-WASM_LDFLAGS := -mexec-model=reactor -Wl,--gc-sections -Wl,--no-entry -Wl,--allow-undefined -Wl,--import-memory -Wl,--global-base=2097152
 
 include ../mk/include.mk
 
