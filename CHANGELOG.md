@@ -1,5 +1,8 @@
 ## [1.4.0] - 2026-11-13
 
+### Changed
+- Require `@tty-pt/corm` `>=2.3.1` (peer) / `^2.3.1` (dev), aligned with the published substrate.
+
 ### Added
 - **Search Weight Propagation (`src/engine.c`)**:
   - Mapped `search_weight` from `hyle_source_field_t` to `hyle_field_t` for dataset definitions.
