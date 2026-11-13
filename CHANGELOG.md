@@ -1,4 +1,4 @@
-## [Unreleased] (target: v1.4.0)
+## [1.4.0] - 2026-11-13
 
 ### Added
 - **NPM Package `@tty-pt/hyle-source` (`npm/`)**:

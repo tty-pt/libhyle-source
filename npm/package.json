@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@tty-pt/corm": "^2.2.4",
-    "@tty-pt/hyle": "^1.6.1",
+    "@tty-pt/hyle": "^1.7.0",
     "@tty-pt/stele": "^1.5.2"
   },
   "keywords": [
