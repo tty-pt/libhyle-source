@@ -21,14 +21,4 @@ jobs:
       # Manual runs build only the platforms that produce a Node prebuild; only tags publish.
       publish_to: ${{ github.event_name == 'workflow_dispatch' && 'rpm,brew' || 'deb,apk,rpm,pacman,brew,openbsd' }}
       run_publish: ${{ startsWith(github.ref, 'refs/tags/') }}
-    secrets:
-      HOST: ${{ secrets.OPENBSD_HOST }}
-      USER: ${{ secrets.OPENBSD_USER }}
-      SSH_KEY: ${{ secrets.OPENBSD_SSH_KEY }}
-      GPG_PRIVATE_KEY: ${{ secrets.OPENBSD_GPG_PRIVATE_KEY }}
-      GPG_PASSPHRASE: ${{ secrets.OPENBSD_GPG_PASSPHRASE }}
-      GPG_KEYID: ${{ secrets.OPENBSD_GPG_KEY_ID }}
-      ABUILD_PRIVATE_KEY: ${{ secrets.ABUILD_PRIVATE_KEY }}
-      ABUILD_PUBLIC_KEY: ${{ secrets.ABUILD_PUBLIC_KEY }}
-      TAP_TOKEN: ${{ secrets.TAP_TOKEN }}
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    secrets: inherit
