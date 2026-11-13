@@ -1,6 +1,8 @@
 ## [1.4.0] - 2026-11-13
 
 ### Added
+- **Search Weight Propagation (`src/engine.c`)**:
+  - Mapped `search_weight` from `hyle_source_field_t` to `hyle_field_t` for dataset definitions.
 - **NPM Package `@tty-pt/hyle-source` (`npm/`)**:
   - Published dual native Node-API (`hyle_source_node.node`) and WebAssembly (`hyle-source.wasm`) package.
   - Added TypeScript declarations in `npm/dist/index.d.ts` and comprehensive test suite in `npm/tests/hyle_source.test.mjs`.

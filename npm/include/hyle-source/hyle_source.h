@@ -77,6 +77,8 @@ typedef struct {
 	const char *filter_mode;
 	/** Derive-provider key. */
 	const char *derive_key;
+	/** Custom search ranking weight (0 = auto). */
+	int search_weight;
 } hyle_source_field_t;
 
 /**

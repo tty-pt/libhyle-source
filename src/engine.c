@@ -694,6 +694,7 @@ int hyle_source_register_def(const hyle_source_def_t *def)
 		                ? 1
 		                : 0;
 		hf[i].derive_key = sf->derive_key;
+		hf[i].search_weight = sf->search_weight;
 	}
 
 	copy = malloc(sizeof(*copy));
