@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -17,7 +18,9 @@ jobs:
       deps_apk: "libstele,libcorm,liblemma,libhyle,json-c-dev"
       deps_rpm: "libstele,libcorm,liblemma,libhyle,json-c-devel"
       deps_brew: "libstele,libcorm,liblemma,libhyle,json-c"
-      publish_to: "deb,apk,rpm,pacman,brew,openbsd"
+      # Manual runs build only the platforms that produce a Node prebuild; only tags publish.
+      publish_to: ${{ github.event_name == 'workflow_dispatch' && 'rpm,brew' || 'deb,apk,rpm,pacman,brew,openbsd' }}
+      run_publish: ${{ startsWith(github.ref, 'refs/tags/') }}
     secrets:
       HOST: ${{ secrets.OPENBSD_HOST }}
       USER: ${{ secrets.OPENBSD_USER }}
