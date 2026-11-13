@@ -19,14 +19,14 @@
     "test": "node --test tests/hyle_source.test.mjs"
   },
   "peerDependencies": {
-    "@tty-pt/corm": ">=2.3.1",
-    "@tty-pt/hyle": ">=1.7.0",
-    "@tty-pt/stele": ">=1.6.0"
+    "@tty-pt/corm": ">=2.3.2",
+    "@tty-pt/hyle": ">=1.7.2",
+    "@tty-pt/stele": ">=1.6.1"
   },
   "devDependencies": {
-    "@tty-pt/corm": "^2.3.1",
-    "@tty-pt/hyle": "^1.7.0",
-    "@tty-pt/stele": "^1.6.0"
+    "@tty-pt/corm": "^2.3.2",
+    "@tty-pt/hyle": "^1.7.2",
+    "@tty-pt/stele": "^1.6.1"
   },
   "keywords": [
     "hyle",
