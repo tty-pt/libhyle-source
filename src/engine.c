@@ -397,6 +397,7 @@ int hyle_source_delete_item(
 	if (def->store.ops && def->store.ops->del)
 		def->store.ops->del((hyle_source_store_t *)&def->store, def, item_id);
 	hyle_registry_del(def->id, item_id);
+	hyle_source_notify_change(def->id, item_id, HYLE_SOURCE_CHANGE_DELETE);
 	return 0;
 }
 
@@ -600,6 +601,8 @@ int hyle_source_update_item(
 	if (!id || !id[0] || !source_util_is_safe_id(id))
 		return -1;
 
+	int was_existing = hyle_source_item_exists(dataset_id, id);
+
 	if (def->store.ops && def->store.ops->put) {
 		for (size_t i = 0; i < def->field_count; i++) {
 			const hyle_source_field_t *f = &def->fields[i];
@@ -637,6 +640,12 @@ int hyle_source_update_item(
 				        (hyle_source_store_t *)&def->store, def, id,
 				        f->file, display);
 		}
+	}
+
+	if (result == 0) {
+		hyle_source_change_type_t ct = was_existing ?
+		        HYLE_SOURCE_CHANGE_UPDATE : HYLE_SOURCE_CHANGE_PUT;
+		hyle_source_notify_change(def->id, id, ct);
 	}
 
 	return result;
