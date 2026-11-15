@@ -23,11 +23,16 @@ import { HyleSource, cachePut, cacheGet } from "@tty-pt/hyle-source";
 
 const source = new HyleSource("./var/data");
 
-// In-memory caching
+// In-memory caching & optimistic mutation hooks
 cachePut("members", "active=1", JSON.stringify([{ id: "m1", name: "Alice" }]));
 const cached = cacheGet("members", "active=1");
 console.log("Cached slice:", cached);
 ```
+
+## Runtime & Optimistic Cache API
+
+- **Dual Engine (`hyle_source_node.node` & `dist/hyle-source.wasm`)**: Uses native Node-API bindings in Node.js and falls back to `hyle-source.wasm` on `@tty-pt/stele`'s shared memory substrate in browsers and edge workers.
+- **Query Cache & Optimistic Updates**: `cachePut`, `cacheGet`, `cacheInvalidate`, `optimisticUpdate`, `optimisticCommit`, and `optimisticRollback` for zero-latency UI mutations with automatic rollback on failure.
 
 ## License
 
