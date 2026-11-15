@@ -1,3 +1,24 @@
+## [Unreleased]
+
+### Changed
+- Upgraded `@tty-pt/stele` (`>=1.7.0` / `^1.7.0`) and `@tty-pt/corm` (`>=2.4.0` / `^2.4.0`) dependencies, and rebuilt `hyle-source.wasm` with the single-allocator `--wrap` shim.
+
+## [1.4.0] - 2026-11-13
+
+### Changed
+- Require `@tty-pt/corm` `>=2.3.1` (peer) / `^2.3.1` (dev), aligned with the published substrate.
+
+### Added
+- **Search Weight Propagation (`src/engine.c`)**:
+  - Mapped `search_weight` from `hyle_source_field_t` to `hyle_field_t` for dataset definitions.
+- **NPM Package `@tty-pt/hyle-source` (`npm/`)**:
+  - Published dual native Node-API (`hyle_source_node.node`) and WebAssembly (`hyle-source.wasm`) package.
+  - Added TypeScript declarations in `npm/dist/index.d.ts` and comprehensive test suite in `npm/tests/hyle_source.test.mjs`.
+  - Added cache layer with optimistic updates and rollback hooks in `src/cache.c` and `include/hyle-source/hyle_source.h`.
+
+### Fixed
+- Eliminate static `node:path` import for browser bundling.
+
 ## [1.3.1]
 
 - **Universal Substrate Migration**: Migrated core platform dependencies from legacy `libqsys` to `libstele` (`-lstele`).
