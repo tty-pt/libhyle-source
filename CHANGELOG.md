@@ -1,7 +1,10 @@
-## [Unreleased]
+## [1.4.1] - 2026-11-16
 
 ### Changed
 - Upgraded `@tty-pt/stele` (`>=1.7.0` / `^1.7.0`) and `@tty-pt/corm` (`>=2.4.0` / `^2.4.0`) dependencies, and rebuilt `hyle-source.wasm` with the single-allocator `--wrap` shim.
+- **Windows (`winget` / MinGW-w64) Support & Packaging (`src/store_fs.c`, `src/source_utils.c`, `src/store_tok.c`, `src/json.c`, `Makefile`, `.github/workflows/ci.yml`)**:
+  - Added portable `_WIN32` shims (`mkdir`, `lstat`, `fsync`/`_commit`, `O_NOFOLLOW`, `strndup`, uid fallback) and `-liconv` / `-lstele` link flags for MinGW-w64.
+  - Added `winget` to `publish_to` so `libhyle-source` publishes across all 7 OS targets (`deb`, `apk`, `rpm`, `pacman`, `brew`, `openbsd`, `winget`) and ships `win32-x64` Node-API prebuilds.
 
 ## [1.4.0] - 2026-11-13
 

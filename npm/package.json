@@ -1,6 +1,6 @@
 {
   "name": "@tty-pt/hyle-source",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "type": "module",
   "description": "Universal Node.js and Browser WebAssembly bindings for libhyle-source Dataset Persistence & Query Engine",
   "main": "dist/index.js",

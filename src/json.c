@@ -7,6 +7,19 @@
 #include <ttypt/lemma.h>
 #include <hyle/registry.h>
 
+#ifdef _WIN32
+static char *hs_strndup(const char *s, size_t n)
+{
+	char *out = malloc(n + 1);
+	if (!out)
+		return NULL;
+	memcpy(out, s, n);
+	out[n] = '\0';
+	return out;
+}
+#define strndup hs_strndup
+#endif
+
 static json_object *hyle_source_build_string_array(const char *input)
 {
 	const char *p, *start;
