@@ -12,6 +12,15 @@
 #include <iconv.h>
 #include <locale.h>
 
+#ifdef _WIN32
+#include <io.h>
+#ifndef O_NOFOLLOW
+#define O_NOFOLLOW 0
+#endif
+#define lstat stat
+#define fsync _commit
+#endif
+
 static iconv_t slug_cd = (iconv_t)-1;
 static int slug_init_done = 0;
 

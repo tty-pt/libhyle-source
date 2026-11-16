@@ -13,15 +13,23 @@
 #include <hyle/hyle.h>
 #include <hyle/registry.h>
 
+#ifdef _WIN32
+#define lstat stat
+#define mkdir(p, m) mkdir(p)
+typedef unsigned int uid_t;
+#else
 #include <pwd.h>
+#endif
 
 static int is_disk_perm_env(void)
 {
 	const char *disk_perms = getenv("AUTH_DISK_PERMS");
 	if (disk_perms)
 		return (strcmp(disk_perms, "1") == 0 || strcmp(disk_perms, "true") == 0);
+#ifndef _WIN32
 	if (geteuid() == 0)
 		return 1;
+#endif
 	const char *env = getenv("AUTH_ENV");
 	if (env && strcmp(env, "prod") == 0)
 		return 1;
@@ -30,10 +38,15 @@ static int is_disk_perm_env(void)
 
 static char *resolve_uid_username(uid_t uid)
 {
+#ifdef _WIN32
+	(void)uid;
+	return NULL;
+#else
 	struct passwd *pw = getpwuid(uid);
 	if (pw && pw->pw_name && pw->pw_name[0])
 		return strdup(pw->pw_name);
 	return NULL;
+#endif
 }
 
 static int fs_load(hyle_source_store_t *store, const hyle_source_def_t *def,

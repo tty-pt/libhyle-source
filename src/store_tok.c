@@ -14,6 +14,10 @@
 #include <hyle/hyle.h>
 #include <hyle/registry.h>
 
+#ifdef _WIN32
+#define mkdir(p, m) mkdir(p)
+#endif
+
 #define HTOK_MAGIC 0x48544F4B /* "HTOK" */
 
 static int tok_load(hyle_source_store_t *store, const hyle_source_def_t *def,
